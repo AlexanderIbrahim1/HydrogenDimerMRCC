@@ -2,12 +2,14 @@
 
 The package 'HydrogenDimerMRCC' provides a method of constructing input files for the hydrogen dimer system, used with the MRCC electronic structure software [M. Kallay *et al.*, *J. Chem. Phys.* **139**, 094105 (2013)]. It creates the hydrogen dimer system using seven parameters:
 
-*R* - the centre-of-mass intermolecular distance between the two hydrogen molecules
-*r~1~*, *r~2~* - the bond lengths of the two molecules
-*&theta;~1~*, *&theta;~2~* - the space-fixed polar angles of the two molecules
-*&phi;~1~*, *&phi;~2~* - the space-fixed azimuthal angles of the two molecules
+- *R* - the centre-of-mass intermolecular distance between the two hydrogen molecules
+- *r<sub>1</sub>*, *r<sub>2</sub>* - the bond lengths of the two molecules
+- *&theta;<sub>1</sub>*, *&theta;<sub>2</sub>* - the space-fixed polar angles of the two molecules
+- *&phi;<sub>1</sub>*, *&phi;<sub>2</sub>* - the space-fixed azimuthal angles of the two molecules
 
 In the context of this project, a large number (several thousands) of electronic structure energy calculations for the hydrogen dimer system must be performed on a large cluster. The technical details (basis set, memory usage, etc.) of the input files are, for the most part, identical. These details are hard-coded based on calculations done in a paper by R. J. Hinde [R. J. Hinde, *J. Chem. Phys.* **128**, 154308 (2008)]. The input files differ only by the positions of the hydrogen atoms.
+
+It should be noted that the system could be reduced to only six degrees of freedom. In many ways, however, using these seven is very convenient. Also, the MRCC software is not included with this package. It is not available on github, and must be downloaded from https://mrcc.hu/.
 
 ## Examples
 
@@ -19,7 +21,7 @@ using HydrogenDimerMRCC
 
 r0 = 0.776777 # ground state vibrational bond length
 R  = 6.0      # centre-of-mass intermolecular distance
-dimer1 = PolarCoords(r0, pi/2, pi/4)
+dimer1 = PolarCoords(r0, pi/2, pi/4)       #(bond-length, polar-angle, azi-angle)
 dimer2 = PolarCoords(r0, pi/4, 4*pi/3)
 dparam = DimerParameters(R, dimer1, dimer2)
 
