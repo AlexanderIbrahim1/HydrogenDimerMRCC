@@ -8,6 +8,8 @@ using Printf
 import Base.@kwdef
 
 struct PolarCoords
+	# coordinates that describe the length and orientation of a hydrogen molecule
+	
 	bondlength::Float64  # bond length of the hydrogen molecule
 	theta::Float64       # space-fixed polar angle of the hydrogen molecule
 	phi::Float64         # space-fixed azimuthal angle of the hydrogen molecule
@@ -30,6 +32,8 @@ struct PolarCoords
 end
 
 @kwdef struct DimerParameters
+	# coordinates that describe the syste of the entire dimer system
+	
 	R::Float64
 	polar1::PolarCoords
 	polar2::PolarCoords
