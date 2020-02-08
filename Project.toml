@@ -2,3 +2,6 @@ name = "HydrogenDimerMRCC"
 uuid = "e7955e42-9df3-4d28-8a0b-30d0b473ddf4"
 authors = ["Alexander Ibrahim <a68ibrahim@uwaterloo.ca>"]
 version = "0.1.0"
+
+[deps]
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"

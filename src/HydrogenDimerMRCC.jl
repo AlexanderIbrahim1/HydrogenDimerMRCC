@@ -1,33 +1,18 @@
 module HydrogenDimerMRCC
 
+export SystemParameters
+export PolarCoords
+export make_mrcc_input_file
+
 using Printf
 import Base.@kwdef
 
-@kwdef struct SystemParameters
-	R::Float64
-	r1::Float64
-	theta1::Float64
-	phi1::Float64
-	r2::Float64
-	theta2::Float64
-	phi2::Float64
-end
-
-@kwdef struct MRCCInputFileInfo
-	titlecomment::String
-	calctype::String
-	memoryMB::Int64
-	threshold::Int64
-	basis::String
-	geometry::String
-end
-
-struct PolarInfo
+struct PolarCoords
 	bondlength::Float64  # bond length of the hydrogen molecule
 	theta::Float64       # space-fixed polar angle of the hydrogen molecule
 	phi::Float64         # space-fixed azimuthal angle of the hydrogen molecule
 	
-	function PolarInfo(bondlength::Float64, theta::Float64, phi::Float64)
+	function PolarCoords(bondlength, theta, phi)
 		if bondlength <= 0
 			error("The molecule's bond length must be positive. ENTERED: $bondlength")
 		end
@@ -44,15 +29,48 @@ struct PolarInfo
 	end
 end
 
+@kwdef struct SystemParameters
+	R::Float64
+	polar1::PolarCoords
+	polar2::PolarCoords
+	
+	function SystemParameters(R, r1, theta1, phi1, r2, theta2, phi2)
+		if (R <= 0)
+			error("The distance between the two molecules must be entered as a positive number. ENTERED: $R")
+		end
+		# The other parameters are checked in the PolarCoords constructor
+		polar1 = PolarCoords(r1, theta1, phi1)
+		polar2 = PolarCoords(r2, theta2, phi2)
+		
+		new(R, polar1, polar2)
+	end
+	
+	function SystemParameters(R, polar1, polar2)
+		if (R <= 0)
+			error("The distance between the two molecules must be entered as a positive number. ENTERED: $R")
+		end
+		new(R, polar1, polar2)
+	end
+end
+
+@kwdef struct MRCCInputFileInfo
+	titlecomment::String
+	calctype::String
+	memoryMB::Int64
+	threshold::Int64
+	basis::String
+	geometry::String
+end
+
 struct Cartesian3D
 	x::Float64
 	y::Float64
 	z::Float64
 end
 
-function get_coordinate_line(pos::Cartesian3D)
+function coordinate_line(pos::Cartesian3D)
 	# returns a string for the cartesian coordinates of a hydrogen atom
-	# for an MRCC input file
+	# for an MRCC input file. The comment is for users looking at the input file
 	
 	xpos_str = "$(@sprintf("% .9f", pos.x))"
 	ypos_str = "$(@sprintf("% .9f", pos.y))"
@@ -62,7 +80,7 @@ function get_coordinate_line(pos::Cartesian3D)
 	return hatom_str
 end
 
-function get_atom_positions(hmol::PolarInfo, com::Cartesian3D)
+function atom_positions(hmol::PolarCoords, com::Cartesian3D)
 	# find the positions of the atoms relative to the centre of mass (com)
 	shift = 0.5 * hmol.bondlength
 	
@@ -100,18 +118,18 @@ end
 function make_mrcc_input_file(sparam::SystemParameters, pathtofilename::AbstractString)
 	# Create the polar coordinates and centre of masses of the two molecules
 	# The first is at the origin, the second is at a distance R on the z-axis
-	mol1 = PolarInfo(sparam.r1, sparam.theta1, sparam.phi1)
+	mol1 = sparam.polar1
 	com1 = Cartesian3D(0.0, 0.0, 0.0)
-	mol2 = PolarInfo(sparam.r2, sparam.theta2, sparam.phi2)
+	mol2 = sparam.polar2
 	com2 = Cartesian3D(0.0, 0.0, sparam.R)
 	
 	# Get the 3D cartesian coordinates for the four atoms
-	atomA, atomB = get_atom_positions(mol1, com1)
-	atomC, atomD = get_atom_positions(mol2, com2)
+	atomA, atomB = atom_positions(mol1, com1)
+	atomC, atomD = atom_positions(mol2, com2)
 	
 	# Get the strings for the cartesian coordinates for the MRCC file
 	# They will be used to create the 'geometry block' of the MRCC file
-	lines = [get_coordinate_line(atom) for atom in [atomA, atomB, atomC, atomD]]
+	lines = [coordinate_line(atom) for atom in [atomA, atomB, atomC, atomD]]
 	geometryblock = join(lines)
 	
 	# Collect the information needed for the MRCC Input File
@@ -130,6 +148,5 @@ end
 sparam = SystemParameters(6.0, 0.776777, pi/4.0, pi/4.0, 0.776777, pi/4.0, pi/2.0)
 filename = "MRCCinputfiles/MINP"
 make_mrcc_input_file(sparam, filename)
-
 
 end # module
