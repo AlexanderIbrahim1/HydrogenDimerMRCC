@@ -1,6 +1,6 @@
 module HydrogenDimerMRCC
 
-export SystemParameters
+export DimerParameters
 export PolarCoords
 export make_mrcc_input_file
 
@@ -29,12 +29,12 @@ struct PolarCoords
 	end
 end
 
-@kwdef struct SystemParameters
+@kwdef struct DimerParameters
 	R::Float64
 	polar1::PolarCoords
 	polar2::PolarCoords
 	
-	function SystemParameters(R, r1, theta1, phi1, r2, theta2, phi2)
+	function DimerParameters(R, r1, theta1, phi1, r2, theta2, phi2)
 		if (R <= 0)
 			error("The distance between the two molecules must be entered as a positive number. ENTERED: $R")
 		end
@@ -45,7 +45,7 @@ end
 		new(R, polar1, polar2)
 	end
 	
-	function SystemParameters(R, polar1, polar2)
+	function DimerParameters(R, polar1, polar2)
 		if (R <= 0)
 			error("The distance between the two molecules must be entered as a positive number. ENTERED: $R")
 		end
@@ -66,6 +66,14 @@ struct Cartesian3D
 	x::Float64
 	y::Float64
 	z::Float64
+end
+
+function distance(pos1::Cartesian3D, pos2::Cartesian3D)
+	dx = pos1.x - pos2.x
+	dy = pos1.y - pos2.y
+	dz = pos1.z - pos2.z
+	
+	sqrt(dx*dx + dy*dy + dz*dz)
 end
 
 function coordinate_line(pos::Cartesian3D)
@@ -115,13 +123,13 @@ function write_input_file(filename::AbstractString, mrcc::MRCCInputFileInfo)
 	close(fout)
 end
 
-function make_mrcc_input_file(sparam::SystemParameters, pathtofilename::AbstractString)
+function make_mrcc_input_file(dparam::DimerParameters, pathtofilename::AbstractString)
 	# Create the polar coordinates and centre of masses of the two molecules
 	# The first is at the origin, the second is at a distance R on the z-axis
-	mol1 = sparam.polar1
+	mol1 = dparam.polar1
 	com1 = Cartesian3D(0.0, 0.0, 0.0)
-	mol2 = sparam.polar2
-	com2 = Cartesian3D(0.0, 0.0, sparam.R)
+	mol2 = dparam.polar2
+	com2 = Cartesian3D(0.0, 0.0, dparam.R)
 	
 	# Get the 3D cartesian coordinates for the four atoms
 	atomA, atomB = atom_positions(mol1, com1)
@@ -144,9 +152,5 @@ function make_mrcc_input_file(sparam::SystemParameters, pathtofilename::Abstract
 	# Create the MRCC input file
 	write_input_file(pathtofilename, mrcc)
 end
-
-sparam = SystemParameters(6.0, 0.776777, pi/4.0, pi/4.0, 0.776777, pi/4.0, pi/2.0)
-filename = "MRCCinputfiles/MINP"
-make_mrcc_input_file(sparam, filename)
 
 end # module
