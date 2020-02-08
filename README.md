@@ -2,10 +2,10 @@
 
 The package 'HydrogenDimerMRCC' provides a method of constructing input files for the hydrogen dimer system, used with the MRCC electronic structure software [M. Kallay *et al.*, *J. Chem. Phys.* **139**, 094105 (2013)]. It creates the hydrogen dimer system using seven parameters:
 
-- *R* - the centre-of-mass intermolecular distance between the two hydrogen molecules
-- *r<sub>1</sub>*, *r<sub>2</sub>* - the bond lengths of the two molecules
-- *&theta;<sub>1</sub>*, *&theta;<sub>2</sub>* - the space-fixed polar angles of the two molecules
-- *&phi;<sub>1</sub>*, *&phi;<sub>2</sub>* - the space-fixed azimuthal angles of the two molecules
+- *R* - the centre-of-mass intermolecular distance between the two hydrogen molecules (Angstroms)
+- *r<sub>1</sub>*, *r<sub>2</sub>* - the bond lengths of the two molecules (Angstroms)
+- *&theta;<sub>1</sub>*, *&theta;<sub>2</sub>* - the space-fixed polar angles of the two molecules (radians)
+- *&phi;<sub>1</sub>*, *&phi;<sub>2</sub>* - the space-fixed azimuthal angles of the two molecules (radians)
 
 In the context of this project, a large number (several thousands) of electronic structure energy calculations for the hydrogen dimer system must be performed on a large cluster. The technical details (basis set, memory usage, etc.) of the input files are, for the most part, identical. These details are hard-coded based on calculations done in a paper by R. J. Hinde [R. J. Hinde, *J. Chem. Phys.* **128**, 154308 (2008)]. The input files differ only by the positions of the hydrogen atoms.
 
